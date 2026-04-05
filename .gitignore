@@ -1,0 +1,32 @@
+### Java / Spring ###
+target/
+*.class
+*.log
+
+### Maven Wrapper ###
+.mvn/wrapper/maven-wrapper.jar
+
+### Python ###
+.venv/
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.pkl
+
+### ML / Data ###
+*.h5
+*.pt
+*.onnx
+*.csv
+*.xlsx
+
+### IDE ###
+.idea/
+.vscode/
+*.iml
+
+### OS ###
+.DS_Store
+Thumbs.db
