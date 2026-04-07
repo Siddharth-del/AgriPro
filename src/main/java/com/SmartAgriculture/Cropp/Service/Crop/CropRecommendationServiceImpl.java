@@ -1,4 +1,4 @@
-package com.SmartAgriculture.Cropp.Service;
+package com.SmartAgriculture.Cropp.service.Crop;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -6,17 +6,18 @@ import java.util.stream.Collectors;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
-import com.SmartAgriculture.Cropp.Service.Ai.AiAdvisoryService;
-import com.SmartAgriculture.Cropp.Service.Ai.MlPredictionService;
-import com.SmartAgriculture.Cropp.dtos.AdvisoryResponse;
-import com.SmartAgriculture.Cropp.dtos.CropRecommendationResponse;
-import com.SmartAgriculture.Cropp.dtos.CropRequestDTO;
 import com.SmartAgriculture.Cropp.dtos.WeatherResponse;
+import com.SmartAgriculture.Cropp.dtos.ai.AdvisoryResponse;
+import com.SmartAgriculture.Cropp.dtos.crop.CropRecommendationResponse;
+import com.SmartAgriculture.Cropp.dtos.crop.CropRequestDTO;
 import com.SmartAgriculture.Cropp.exception.ResourceNotFoundException;
 import com.SmartAgriculture.Cropp.model.CropRecommendation;
 import com.SmartAgriculture.Cropp.model.SensorData;
 import com.SmartAgriculture.Cropp.repository.CropRepository;
 import com.SmartAgriculture.Cropp.repository.SensorDataRepository;
+import com.SmartAgriculture.Cropp.service.WeatherService;
+import com.SmartAgriculture.Cropp.service.ai.AiAdvisoryService;
+import com.SmartAgriculture.Cropp.service.ai.MlPredictionService;
 import com.SmartAgriculture.Cropp.utils.AuthUtil;
 
 import lombok.RequiredArgsConstructor;

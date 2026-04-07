@@ -11,9 +11,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.SmartAgriculture.Cropp.Service.CropRecommendationService;
-import com.SmartAgriculture.Cropp.dtos.CropRecommendationResponse;
-import com.SmartAgriculture.Cropp.dtos.CropRequestDTO;
+import com.SmartAgriculture.Cropp.dtos.crop.CropRecommendationResponse;
+import com.SmartAgriculture.Cropp.dtos.crop.CropRequestDTO;
+import com.SmartAgriculture.Cropp.service.Crop.CropRecommendationService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

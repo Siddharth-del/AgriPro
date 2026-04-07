@@ -1,4 +1,4 @@
-package com.SmartAgriculture.Cropp.dtos;
+package com.SmartAgriculture.Cropp.dtos.auth;
 
 import java.time.LocalDateTime;
 

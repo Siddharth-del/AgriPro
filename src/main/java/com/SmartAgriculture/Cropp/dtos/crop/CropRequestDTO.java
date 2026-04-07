@@ -1,4 +1,4 @@
-package com.SmartAgriculture.Cropp.dtos;
+package com.SmartAgriculture.Cropp.dtos.crop;
 
 import jakarta.validation.constraints.*;
 

@@ -1,6 +1,6 @@
-package com.SmartAgriculture.Cropp.Service.Ai;
+package com.SmartAgriculture.Cropp.service.ai;
 
-import com.SmartAgriculture.Cropp.dtos.AdvisoryResponse;
+import com.SmartAgriculture.Cropp.dtos.ai.AdvisoryResponse;
 import com.SmartAgriculture.Cropp.model.SensorData;
 
 public interface AiAdvisoryService {

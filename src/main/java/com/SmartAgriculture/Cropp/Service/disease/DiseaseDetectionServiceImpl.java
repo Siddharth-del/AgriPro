@@ -1,4 +1,4 @@
-package com.SmartAgriculture.Cropp.Service;
+package com.SmartAgriculture.Cropp.service.disease;
 
 import java.io.File;
 import java.io.IOException;
@@ -13,14 +13,14 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.SmartAgriculture.Cropp.Service.Ai.AiAdvisoryService;
-import com.SmartAgriculture.Cropp.Service.Ai.MlPredictionService;
-import com.SmartAgriculture.Cropp.dtos.AdvisoryResponse;
-import com.SmartAgriculture.Cropp.dtos.DiseaseDetectionResponse;
-import com.SmartAgriculture.Cropp.dtos.DiseasePredictionResponse;
+import com.SmartAgriculture.Cropp.dtos.ai.AdvisoryResponse;
+import com.SmartAgriculture.Cropp.dtos.disease.DiseaseDetectionResponse;
+import com.SmartAgriculture.Cropp.dtos.disease.DiseasePredictionResponse;
 import com.SmartAgriculture.Cropp.model.DiseaseDetection;
 import com.SmartAgriculture.Cropp.repository.DiseaseDetectionRepository;
 import com.SmartAgriculture.Cropp.repository.UserRepository;
+import com.SmartAgriculture.Cropp.service.ai.AiAdvisoryService;
+import com.SmartAgriculture.Cropp.service.ai.MlPredictionService;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.transaction.Transactional;

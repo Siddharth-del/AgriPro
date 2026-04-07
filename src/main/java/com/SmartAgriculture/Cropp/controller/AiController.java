@@ -1,8 +1,8 @@
 package com.SmartAgriculture.Cropp.controller;
 
-import com.SmartAgriculture.Cropp.Service.Ai.AiAdvisoryService;
-import com.SmartAgriculture.Cropp.dtos.AdvisoryResponse;
+import com.SmartAgriculture.Cropp.dtos.ai.AdvisoryResponse;
 import com.SmartAgriculture.Cropp.model.SensorData;
+import com.SmartAgriculture.Cropp.service.ai.AiAdvisoryService;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;

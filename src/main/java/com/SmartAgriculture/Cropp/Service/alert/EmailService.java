@@ -1,4 +1,4 @@
-package com.SmartAgriculture.Cropp.Service;
+package com.SmartAgriculture.Cropp.service.alert;
 
 public interface EmailService {
     void sendEmail(String toEmail, String subject, String body);

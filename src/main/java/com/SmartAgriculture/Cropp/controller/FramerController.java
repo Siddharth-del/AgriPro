@@ -10,10 +10,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.SmartAgriculture.Cropp.Service.CropRecommendationService;
-import com.SmartAgriculture.Cropp.Service.FarmerProfileService;
 import com.SmartAgriculture.Cropp.dtos.FarmerProfileRequest;
 import com.SmartAgriculture.Cropp.dtos.FarmerProfileResponse;
+import com.SmartAgriculture.Cropp.service.FarmerProfileService;
+import com.SmartAgriculture.Cropp.service.Crop.CropRecommendationService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

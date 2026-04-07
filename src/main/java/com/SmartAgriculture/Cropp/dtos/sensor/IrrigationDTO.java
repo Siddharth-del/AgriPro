@@ -1,4 +1,4 @@
-package com.SmartAgriculture.Cropp.dtos;
+package com.SmartAgriculture.Cropp.dtos.sensor;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;

@@ -1,4 +1,4 @@
-package com.SmartAgriculture.Cropp.Service;
+package com.SmartAgriculture.Cropp.service;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;

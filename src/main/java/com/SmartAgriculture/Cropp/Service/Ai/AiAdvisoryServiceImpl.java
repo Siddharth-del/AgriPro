@@ -1,11 +1,11 @@
-package com.SmartAgriculture.Cropp.Service.Ai;
+package com.SmartAgriculture.Cropp.service.ai;
 
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.SmartAgriculture.Cropp.dtos.AdvisoryResponse;
+import com.SmartAgriculture.Cropp.dtos.ai.AdvisoryResponse;
 import com.SmartAgriculture.Cropp.model.SensorData;
 
 import lombok.RequiredArgsConstructor;

@@ -1,4 +1,4 @@
-package com.SmartAgriculture.Cropp.dtos;
+package com.SmartAgriculture.Cropp.dtos.ai;
 
 import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;

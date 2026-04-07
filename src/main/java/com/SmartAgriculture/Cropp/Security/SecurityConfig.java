@@ -71,7 +71,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/disease/**").hasAnyRole("FARMER", "ADMIN")
                         .requestMatchers("/api/ai/**").hasAnyRole("FARMER", "ADMIN")
                         .requestMatchers("/api/farmer/**").hasRole("FARMER")
-                        .requestMatchers("/api/sensor/").permitAll()
+                        .requestMatchers("/api/sensor/**").permitAll()
                         .requestMatchers("/api/alert/**").permitAll()
                         .requestMatchers("/api/agronomist/**").hasRole("AGRONOMIST")
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")

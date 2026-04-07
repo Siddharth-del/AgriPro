@@ -1,4 +1,4 @@
-package com.SmartAgriculture.Cropp.Service;
+package com.SmartAgriculture.Cropp.service.alert;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;

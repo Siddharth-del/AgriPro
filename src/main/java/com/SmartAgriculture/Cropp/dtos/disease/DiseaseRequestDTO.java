@@ -1,4 +1,4 @@
-package com.SmartAgriculture.Cropp.dtos;
+package com.SmartAgriculture.Cropp.dtos.disease;
 
 import org.springframework.web.multipart.MultipartFile;
 

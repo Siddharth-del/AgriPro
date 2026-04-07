@@ -1,4 +1,4 @@
-package com.SmartAgriculture.Cropp.Service;
+package com.SmartAgriculture.Cropp.service;
 
 import java.time.LocalDateTime;
 
@@ -12,6 +12,7 @@ import com.SmartAgriculture.Cropp.exception.ResourceNotFoundException;
 import com.SmartAgriculture.Cropp.model.FarmerProfile;
 import com.SmartAgriculture.Cropp.model.User;
 import com.SmartAgriculture.Cropp.repository.FarmerProfileRepository;
+import com.SmartAgriculture.Cropp.service.alert.EmailService;
 import com.SmartAgriculture.Cropp.utils.AuthUtil;
 
 import jakarta.transaction.Transactional;

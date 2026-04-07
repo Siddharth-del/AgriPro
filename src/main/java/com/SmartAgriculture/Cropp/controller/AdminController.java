@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.SmartAgriculture.Cropp.Service.AdminService;
 import com.SmartAgriculture.Cropp.dtos.FarmerProfileResponse;
+import com.SmartAgriculture.Cropp.service.AdminService;
 
 import lombok.RequiredArgsConstructor;
 

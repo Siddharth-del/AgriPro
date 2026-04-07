@@ -7,8 +7,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import com.SmartAgriculture.Cropp.Service.DiseaseDetectionService;
-import com.SmartAgriculture.Cropp.dtos.DiseaseDetectionResponse;
+
+import com.SmartAgriculture.Cropp.dtos.disease.DiseaseDetectionResponse;
+import com.SmartAgriculture.Cropp.service.disease.DiseaseDetectionService;
 
 import lombok.RequiredArgsConstructor;
 

@@ -1,4 +1,4 @@
-package com.SmartAgriculture.Cropp.Service;
+package com.SmartAgriculture.Cropp.service.disease;
 
 import org.springframework.web.multipart.MultipartFile;
 

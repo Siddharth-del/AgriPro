@@ -1,4 +1,4 @@
-package com.SmartAgriculture.Cropp.Service;
+package com.SmartAgriculture.Cropp.service;
 
 import java.util.List;
 import org.modelmapper.ModelMapper;

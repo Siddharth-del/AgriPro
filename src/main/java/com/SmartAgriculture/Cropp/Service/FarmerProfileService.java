@@ -1,4 +1,4 @@
-package com.SmartAgriculture.Cropp.Service;
+package com.SmartAgriculture.Cropp.service;
 
 import com.SmartAgriculture.Cropp.dtos.FarmerProfileRequest;
 import com.SmartAgriculture.Cropp.dtos.FarmerProfileResponse;

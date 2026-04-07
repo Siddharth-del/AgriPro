@@ -1,4 +1,4 @@
-package com.SmartAgriculture.Cropp.Service.Ai;
+package com.SmartAgriculture.Cropp.service.ai;
 
 import java.io.File;
 import java.util.HashMap;
@@ -15,8 +15,8 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 
-import com.SmartAgriculture.Cropp.dtos.CropRecommendationResponse;
-import com.SmartAgriculture.Cropp.dtos.DiseasePredictionResponse;
+import com.SmartAgriculture.Cropp.dtos.crop.CropRecommendationResponse;
+import com.SmartAgriculture.Cropp.dtos.disease.DiseasePredictionResponse;
 import com.SmartAgriculture.Cropp.model.SensorData;
 
 import lombok.RequiredArgsConstructor;
