@@ -2,25 +2,17 @@
 target/
 *.class
 *.log
+logs/
 
-### Maven Wrapper ###
+### Config (IMPORTANT) ###
+application.properties
+application.yml
+.env
+.env.*
+
+### Maven ###
 .mvn/wrapper/maven-wrapper.jar
-
-### Python ###
-.venv/
-venv/
-__pycache__/
-*.pyc
-*.pyo
-*.pyd
-*.pkl
-
-### ML / Data ###
-*.h5
-*.pt
-*.onnx
-*.csv
-*.xlsx
+dependency-reduced-pom.xml
 
 ### IDE ###
 .idea/
