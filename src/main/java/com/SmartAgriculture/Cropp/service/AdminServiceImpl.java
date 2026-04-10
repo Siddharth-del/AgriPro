@@ -1,7 +1,5 @@
 package com.SmartAgriculture.Cropp.service;
 
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -13,6 +11,7 @@ import com.SmartAgriculture.Cropp.repository.FarmerProfileRepository;
 import com.SmartAgriculture.Cropp.repository.UserRepository;
 import com.SmartAgriculture.Cropp.utils.AuthUtil;
 
+import io.jsonwebtoken.lang.Collections;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
@@ -24,16 +23,16 @@ public class AdminServiceImpl implements AdminService {
     private final AuthUtil authUtils;
     private final ModelMapper modelMapper;
     private final UserRepository userRepository;
+
     @Override
     public String deleteFarmer(Long userId) {
         if (!farmerProfileRepository.existsByUser_UserId(userId)) {
             throw new ResourceNotFoundException("Farmer", "User", userId);
         }
-        
-        userRepository.deleteById(userId);
+
         //farmerProfileRepository.deleteByUserId(userId);
+        userRepository.deleteById(userId);
         return "Profile deleted Successfully !";
-        
     }
 
     @Override
