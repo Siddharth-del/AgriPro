@@ -36,9 +36,11 @@ public class SensorData {
     private Double temperature;
     private Double humidity;
     private Double ph;
+    private Double SoilMoisture;
 
     @CreationTimestamp
     private LocalDateTime createdAt;
+    private String  createdBy;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = true)

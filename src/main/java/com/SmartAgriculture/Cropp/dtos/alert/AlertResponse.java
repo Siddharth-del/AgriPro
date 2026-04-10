@@ -16,4 +16,5 @@ public class AlertResponse {
     private double temperature;
     private double humidity;
     private String city;
+     private String emailStatus;
 }

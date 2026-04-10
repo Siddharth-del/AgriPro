@@ -79,7 +79,7 @@ public class AuthController {
 
         UserInfoResponse response = new UserInfoResponse(userDetails.getId(),
                 userDetails.getUsername(), roles, jwtCookie.toString());
-
+   
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
                 .body(response);
@@ -111,19 +111,26 @@ if (strRoles == null || strRoles.isEmpty()) {
 
 } else {
 
-    strRoles.forEach(roleStr -> {
+    strRoles.forEach(role-> {
 
-        AppRole appRole;
-        try {
-            appRole = AppRole.valueOf(roleStr);
-        } catch (IllegalArgumentException e) {
-            throw new RuntimeException(" Invalid role " + roleStr);
-        }
+       switch (role) {
+                    case "admin":
+                        Role adminRole = roleRepository.findByRoleName(AppRole.ROLE_ADMIN)
+                                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+                        roles.add(adminRole);
 
-        Role role = roleRepository.findByRoleName(appRole)
-                .orElseThrow(() -> new RuntimeException(" Role not found " + appRole));
+                        break;
+                    case "agronomist":
+                        Role modRole = roleRepository.findByRoleName(AppRole.ROLE_AGRONOMIST)
+                                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+                        roles.add(modRole);
 
-        roles.add(role);
+                        break;
+                    default:
+                        Role userRole = roleRepository.findByRoleName(AppRole.ROLE_FARMER)
+                                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+                        roles.add(userRole);
+                }
     });
 }
 

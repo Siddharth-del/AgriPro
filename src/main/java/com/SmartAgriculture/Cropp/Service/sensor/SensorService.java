@@ -4,139 +4,100 @@ import com.SmartAgriculture.Cropp.dtos.*;
 import com.SmartAgriculture.Cropp.dtos.sensor.SensorAutoRequest;
 import com.SmartAgriculture.Cropp.dtos.sensor.SensorLatestResponse;
 import com.SmartAgriculture.Cropp.model.SensorData;
+import com.SmartAgriculture.Cropp.model.User;
 import com.SmartAgriculture.Cropp.repository.SensorDataRepository;
 import com.SmartAgriculture.Cropp.repository.UserRepository;
 import com.SmartAgriculture.Cropp.service.WeatherService;
-import com.SmartAgriculture.Cropp.service.alert.EmailService;
-import com.SmartAgriculture.Cropp.model.User;
+
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class SensorService {
 
-    private final WeatherService       weatherService;
-    private final EmailService         emailService;
+    private final WeatherService weatherService;
     private final SensorDataRepository sensorDataRepository;
-    private final UserRepository       userRepository;
+    private final UserRepository userRepository;
 
     @Value("${irrigation.moisture.threshold:30}")
     private double threshold;
 
-    @Value("${irrigation.email.cooldown.minutes:10}")
-    private long cooldownMinutes;
-
-    private final Map<String, LocalDateTime> lastEmailMap = new ConcurrentHashMap<>();
-    private volatile SensorLatestResponse    latestReading = null;
-
+    @Transactional
     public String processAndAlert(SensorAutoRequest request) {
         double moisture = request.getSoilMoisture();
         String city     = request.getCity();
 
-        WeatherResponse weather;
-        try {
-            weather = weatherService.getWeatherCity(city);
-        } catch (Exception e) {
-            log.error("Weather fetch failed for {}: {}", city, e.getMessage());
-            return "Error: Weather fetch failed for " + city;
-        }
+        User deviceUser = userRepository.findByUsername(request.getUsername())
+                .orElseThrow(() -> new RuntimeException("User not found: " + request.getUsername()));
 
-        double temp     = weather.getMain().getTemp();
-        double humidity = weather.getMain().getHumidity();
+        double temp = 0, humidity = 0;
+        try {
+            WeatherResponse weather = weatherService.getWeatherCity(city);
+            temp     = weather.getMain().getTemp();
+            humidity = weather.getMain().getHumidity();
+        } catch (Exception e) {
+            log.warn("Weather fetch failed for city={}: {}", city, e.getMessage());
+        }
 
         SensorData data = new SensorData();
         data.setDeviceId(request.getDeviceId());
-        data.setHumidity(humidity);
+        data.setSoilMoisture(moisture);
         data.setTemperature(temp);
-        data.setNitrogen(moisture);
+        data.setHumidity(humidity);
+        data.setUser(deviceUser);
         sensorDataRepository.save(data);
 
-        String status;
-        String emailStatus = "Not Needed";
+        String status = classifyMoisture(moisture);
+        log.info("Sensor saved: user={}, moisture={}%, status={}", deviceUser.getUsername(), moisture, status);
 
-        if (moisture >= threshold) {
-            status = "OK";
-        } else if (moisture >= threshold * 0.6) {
-            status      = "WARNING";
-            emailStatus = sendToAllFarmers(city, moisture, temp, humidity);
-        } else {
-            status      = "CRITICAL";
-            emailStatus = sendToAllFarmers(city, moisture, temp, humidity);
-        }
-
-        latestReading = SensorLatestResponse.builder()
-                .soilMoisture(moisture)
-                .temperature(temp)
-                .humidity(humidity)
-                .city(city)
-                .status(status)
-                .emailStatus(emailStatus)
-                .recordedAt(LocalDateTime.now())
-                .deviceId(request.getDeviceId())
-                .build();
-
-        log.info("ESP32 reading processed: moisture={}%, status={}, email={}", moisture, status, emailStatus);
-        return status + " | Email: " + emailStatus;
+        return status;
     }
 
     public SensorLatestResponse getLatestReading() {
-        if (latestReading == null) {
-            return SensorLatestResponse.builder()
-                    .status("No Data")
-                    .emailStatus("None")
-                    .recordedAt(LocalDateTime.now())
-                    .build();
-        }
-        return latestReading;
+        return sensorDataRepository.findTopOrderByCreatedAtDesc()
+                .map(data -> SensorLatestResponse.builder()
+                        .soilMoisture(data.getSoilMoisture())
+                        .temperature(data.getTemperature())
+                        .humidity(data.getHumidity())
+                        .status(classifyMoisture(data.getSoilMoisture()))
+                        .emailStatus("—")
+                        .recordedAt(data.getCreatedAt())
+                        .deviceId(data.getDeviceId())
+                        .build())
+                .orElseGet(() -> SensorLatestResponse.builder()
+                        .status("No Data")
+                        .emailStatus("None")
+                        .recordedAt(LocalDateTime.now())
+                        .build());
     }
 
     public List<SensorLatestResponse> getHistory(int limit) {
-        return latestReading == null ? List.of() : List.of(latestReading);
+        return sensorDataRepository.findLatestAll(Pageable.ofSize(limit))
+                .stream()
+                .map(data -> SensorLatestResponse.builder()
+                        .soilMoisture(data.getSoilMoisture())
+                        .temperature(data.getTemperature())
+                        .humidity(data.getHumidity())
+                        .status(classifyMoisture(data.getSoilMoisture()))
+                        .recordedAt(data.getCreatedAt())
+                        .deviceId(data.getDeviceId())
+                        .build())
+                .toList();
     }
 
-    private String sendToAllFarmers(String city, double moisture, double temp, double humidity) {
-        List<User> users = userRepository.findAll();
-        if (users.isEmpty()) {
-            log.warn("No users found to send irrigation alert");
-            return "No Users Found";
-        }
-
-        int sent = 0;
-        int skipped = 0;
-
-        for (User user : users) {
-            String email = user.getEmail();
-            if (email == null || email.isBlank()) continue;
-
-            LocalDateTime now  = LocalDateTime.now();
-            LocalDateTime last = lastEmailMap.get(email);
-
-            if (last != null && last.plusMinutes(cooldownMinutes).isAfter(now)) {
-                skipped++;
-                continue;
-            }
-
-            try {
-                emailService.sendIrrigationAlert(email, city, moisture, temp, humidity);
-                lastEmailMap.put(email, now);
-                log.info("Irrigation alert sent to {}", email);
-                sent++;
-            } catch (Exception e) {
-                log.error("Email failed for {}: {}", email, e.getMessage());
-            }
-        }
-
-        if (sent > 0)     return "Sent (" + sent + " user" + (sent > 1 ? "s" : "") + ")";
-        if (skipped > 0)  return "Cooldown";
-        return "Failed";
+    private String classifyMoisture(Double moisture) {
+        if (moisture == null)            return "Unknown";
+        if (moisture >= threshold)       return "OK";
+        if (moisture >= threshold * 0.6) return "WARNING";
+        return "CRITICAL";
     }
 }

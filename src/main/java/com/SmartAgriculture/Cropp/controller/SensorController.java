@@ -18,12 +18,14 @@ import com.SmartAgriculture.Cropp.service.sensor.SensorService;
 public class SensorController {
 
     private final SensorService sensorService;
-     @PreAuthorize("isAuthenticated()")
+
+    // POST /api/sensor/data
+    // IoT device (ESP32) sends moisture + city with farmer's JWT token
     @PostMapping("/data")
+    //@PreAuthorize("isAuthenticated()")
     public ResponseEntity<String> receiveData(@Valid @RequestBody SensorAutoRequest request) {
-        log.info("ESP32 data: city={}, moisture={}%, device={}",
-                request.getCity(), request.getSoilMoisture(), request.getDeviceId());
-        return ResponseEntity.ok(sensorService.processAndAlert(request));
+        String result = sensorService.processAndAlert(request);
+        return ResponseEntity.ok(result);
     }
 
     @GetMapping("/latest")

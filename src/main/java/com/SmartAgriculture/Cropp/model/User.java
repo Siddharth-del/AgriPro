@@ -61,4 +61,8 @@ public class User {
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private FarmerProfile farmerProfile;
+
+
+    @Column(name = "last_alert_sent")
+    private LocalDateTime lastAlertSent;
 }

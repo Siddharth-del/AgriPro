@@ -6,4 +6,7 @@ public interface EmailService {
     void sendAlertEmail(String toEmail, String title, String message);
     void sendIrrigationAlert(String toEmail, String city,
                               double soilMoisture, double temperature, double humidity);
+                              
 }
+
+

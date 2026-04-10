@@ -27,7 +27,7 @@ public class EmailServiceImpl implements EmailService {
             message.setSubject(subject);
             message.setText(body);
             mailSender.send(message);
-            log.info("Email sent to: {}", toEmail);
+            log.info("Email sent successfully to: {}", toEmail);
         } catch (Exception e) {
             log.error("Failed to send email to {}: {}", toEmail, e.getMessage());
             throw new RuntimeException("Failed to send email: " + e.getMessage());
@@ -36,39 +36,70 @@ public class EmailServiceImpl implements EmailService {
 
     @Override
     public void sendWelcomeEmail(String toEmail, String username) {
-        String subject = "Welcome to Smart Agriculture System";
+        String subject = "Welcome to AgriPro — Smart Agriculture Platform";
         String body = """
                 Dear %s,
 
-                Welcome to Smart Agriculture System!
-                You have successfully registered.
+                Welcome to AgriPro — Smart Agriculture System!
 
-                You can now:
-                - Get Crop Recommendations
-                - Detect Plant Diseases
-                - Get AI Advisory
-                - Monitor Irrigation Alerts
+                We are delighted to have you on board. Your account has been
+                successfully created and is ready to use.
 
-                Regards,
-                Smart Agriculture System
+                With AgriPro, you can:
+
+                  ✅  Get AI-Powered Crop Recommendations
+                  ✅  Detect Plant Diseases via Image Analysis
+                  ✅  Receive Smart Irrigation Alerts
+                  ✅  Access Real-Time Field Monitoring
+                  ✅  Get Expert AI Agricultural Advisory
+
+                If you have any questions or need assistance, please do not
+                hesitate to reach out to our support team.
+
+                We wish you a productive and fruitful harvest season.
+
+                Warm Regards,
+                ─────────────────────────────────────────────
+                AgriPro Support Team
+                Smart Agriculture IoT Platform
+                Powered by ESP32 | OpenWeatherMap | Spring AI
+                ─────────────────────────────────────────────
                 """.formatted(username);
         sendEmail(toEmail, subject, body);
     }
 
     @Override
     public void sendAlertEmail(String toEmail, String title, String message) {
-        String subject = "Alert: " + title;
+        String subject = "⚠️ AgriPro Alert: " + title;
         String body = """
                 Dear Farmer,
 
-                ALERT: %s
+                This is an automated alert from the AgriPro Smart Agriculture System.
 
-                %s
+                ──────────────────────────────────────────────
+                ALERT NOTIFICATION
+                ──────────────────────────────────────────────
 
-                Please take necessary action immediately.
+                  Title   : %s
+                  Details : %s
+
+                ──────────────────────────────────────────────
+
+                Please review the above alert and take the necessary action
+                at the earliest to avoid any potential crop loss or damage.
+
+                If you believe this alert was triggered in error, please
+                verify your sensor connections and field conditions.
+
+                This is a system-generated message. Please do not reply
+                directly to this email.
 
                 Regards,
-                Smart Agriculture System
+                ─────────────────────────────────────────────
+                AgriPro Alert System
+                Smart Agriculture IoT Platform
+                Powered by ESP32 | OpenWeatherMap | Spring AI
+                ─────────────────────────────────────────────
                 """.formatted(title, message);
         sendEmail(toEmail, subject, body);
     }
@@ -77,27 +108,71 @@ public class EmailServiceImpl implements EmailService {
     public void sendIrrigationAlert(String toEmail, String city,
                                      double soilMoisture, double temperature,
                                      double humidity) {
-        String subject = "🌱 Irrigation Alert: Action Required — " + city;
+
+        String urgencyLevel  = soilMoisture < 15 ? "CRITICAL" : "WARNING";
+        String urgencySymbol = soilMoisture < 15 ? "🔴" : "🟡";
+
+        String subject = urgencySymbol + " [" + urgencyLevel + "] Irrigation Alert — " + city + " | AgriPro";
+
         String body = """
                 Dear Farmer,
 
-                ⚠️  IRRIGATION ALERT for %s
+                AgriPro's IoT monitoring system has detected that your field's
+                soil moisture level has dropped below the safe threshold.
+                Immediate attention is required to protect your crops.
 
-                Current Field Conditions:
-                  • Soil Moisture : %.1f%%  ← Below 30%% (Critical)
-                  • Temperature   : %.1f°C
-                  • Humidity      : %.1f%%
+                ══════════════════════════════════════════════
+                  %s  IRRIGATION ALERT — %s
+                ══════════════════════════════════════════════
 
-                Action Required:
-                  Please irrigate your fields immediately to prevent crop damage.
+                  Severity      : %s
+                  Location      : %s
+                  Detected At   : (Timestamp provided by server)
 
-                ⏱  Note: Next alert will be sent after 10 minutes cooldown.
+                ──────────────────────────────────────────────
+                  CURRENT FIELD CONDITIONS
+                ──────────────────────────────────────────────
 
-                ─────────────────────────────────────────
-                Smart Agriculture IoT System
-                Powered by ESP32 + OpenWeatherMap
-                ─────────────────────────────────────────
-                """.formatted(city, soilMoisture, temperature, humidity);
+                  🌱 Soil Moisture  : %.1f%%   ⚠️  Threshold: 30%%
+                  🌡  Temperature    : %.1f°C
+                  💧 Humidity       : %.1f%%
+
+                ──────────────────────────────────────────────
+                  RECOMMENDED ACTION
+                ──────────────────────────────────────────────
+
+                  1. Begin irrigation of affected fields immediately.
+                  2. Check and inspect your irrigation pipeline for blockages.
+                  3. Monitor moisture levels for the next 1–2 hours.
+                  4. If moisture does not recover, consult your agronomist.
+
+                ──────────────────────────────────────────────
+                  ℹ️  NOTE
+                ──────────────────────────────────────────────
+
+                  • This alert was triggered automatically by your ESP32
+                    soil moisture sensor.
+                  • A cooldown of 10 minutes is applied to avoid duplicate
+                    alerts for the same field condition.
+                  • Ensure your sensor is properly inserted into the soil
+                    for accurate readings.
+
+                ══════════════════════════════════════════════
+
+                This is an automated message from AgriPro IoT System.
+                Please do not reply to this email.
+
+                ─────────────────────────────────────────────
+                AgriPro Smart Agriculture Platform
+                Powered by ESP32 | OpenWeatherMap | Spring AI
+                © 2025 AgriPro. All rights reserved.
+                ─────────────────────────────────────────────
+                """.formatted(
+                        urgencySymbol, city,
+                        urgencyLevel, city,
+                        soilMoisture, temperature, humidity
+                );
+
         sendEmail(toEmail, subject, body);
     }
 }
