@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -112,7 +113,7 @@ public class DiseaseDetectionServiceImpl implements DiseaseDetectionService {
         List<DiseaseDetection> diseases = diseaseRepository.findByDiseaseNameIgnoreCase(diseaseName);
 
         if (diseases.isEmpty()) {
-            throw new RuntimeException("Disease Not Found!");
+            return Collections.emptyList();
         }
 
         List<DiseaseDetectionResponse> response = diseases.stream()

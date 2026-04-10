@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.SmartAgriculture.Cropp.dtos.WeatherResponse;
 import com.SmartAgriculture.Cropp.dtos.ai.AdvisoryResponse;
@@ -19,6 +20,12 @@ import com.SmartAgriculture.Cropp.service.WeatherService;
 import com.SmartAgriculture.Cropp.service.ai.AiAdvisoryService;
 import com.SmartAgriculture.Cropp.service.ai.MlPredictionService;
 import com.SmartAgriculture.Cropp.utils.AuthUtil;
+
+import io.jsonwebtoken.lang.Collections;
+
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import lombok.RequiredArgsConstructor;
 
@@ -35,10 +42,15 @@ public class CropRecommendationServiceImpl implements CropRecommendationService 
         private final AuthUtil authUtil;
 
         @Override
+        @Transactional
         public CropRecommendationResponse recommendCrop(CropRequestDTO request) {
-            WeatherResponse weather=weatherService.getWeatherCity(request.getLocation());
-               double temp=weather.getMain().getTemp();
-               double humi=weather.getMain().getHumidity();
+                WeatherResponse weather = weatherService.getWeatherCity(request.getLocation());
+                Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+                if (auth == null || !auth.isAuthenticated() || auth instanceof AnonymousAuthenticationToken) {
+                        throw new RuntimeException("User not authenticated");
+                }
+                double temp = weather.getMain().getTemp();
+                double humi = weather.getMain().getHumidity();
 
                 SensorData sensorData = new SensorData();
                 sensorData.setHumidity(humi);
@@ -54,7 +66,6 @@ public class CropRecommendationServiceImpl implements CropRecommendationService 
 
                 CropRecommendationResponse result = mlPredictionService.predictCrop(sensorData);
 
-                
                 AdvisoryResponse advisory = aiAdvisoryService.generateCropAdvisory(
                                 result.getCropName(),
                                 sensorData);
@@ -69,7 +80,7 @@ public class CropRecommendationServiceImpl implements CropRecommendationService 
                 crop.setCropName(response.getCropName());
                 crop.setExplanation(response.getExplanation());
                 crop.setConfidenceScore(response.getCropConfidence());
-                crop.setCropId(response.getCropId());
+               
                 crop.setSensorData(sensorData);
                 crop.setLocation(request.getLocation());
                 CropRecommendation save = cropRepository.save(crop);
@@ -83,7 +94,7 @@ public class CropRecommendationServiceImpl implements CropRecommendationService 
         public List<CropRecommendationResponse> getCropByName(String name) {
                 List<CropRecommendation> crops = cropRepository.findByCropNameIgnoreCase(name);
                 if (crops.isEmpty()) {
-                        throw new RuntimeException("Crop not Found !");
+                        return Collections.emptyList();
                 }
                 List<CropRecommendationResponse> response = crops.stream()
                                 .map(crop -> modelMapper.map(crop, CropRecommendationResponse.class))
@@ -91,16 +102,16 @@ public class CropRecommendationServiceImpl implements CropRecommendationService 
 
                 return response;
         }
-         
+
         @Override
-        public List<CropRecommendationResponse> getAllCrop(){
-                List<CropRecommendation> crops=cropRepository.findWithCrop();
-                if(crops.isEmpty()){
-                        throw new ResourceNotFoundException("Crops", "List", "Empty");
+        public List<CropRecommendationResponse> getAllCrop() {
+                List<CropRecommendation> crops = cropRepository.findWithCrop();
+                if (crops.isEmpty()) {
+                     return Collections.emptyList();
                 }
 
-                List<CropRecommendationResponse> response=crops.stream()
-                                                 .map(crop->modelMapper.map(crop,CropRecommendationResponse.class)).toList();
+                List<CropRecommendationResponse> response = crops.stream()
+                                .map(crop -> modelMapper.map(crop, CropRecommendationResponse.class)).toList();
                 return response;
         }
 
