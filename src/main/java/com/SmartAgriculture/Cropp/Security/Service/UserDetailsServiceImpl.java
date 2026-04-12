@@ -13,22 +13,23 @@ import lombok.RequiredArgsConstructor;
 
 import com.SmartAgriculture.Cropp.model.User;
 
-
 @Service
 @RequiredArgsConstructor
 
-public class UserDetailsServiceImpl implements UserDetailsService{
-   
+public class UserDetailsServiceImpl implements UserDetailsService {
+
     private final UserRepository userRepository;
-     
+
     @Override
     @Transactional
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User Not Found with username: " + username));
+        System.out.println("Loading user: " + username);
+        System.out.println("Found: " + user.getUsername());
+        System.out.println("DB Password: " + user.getPassword());
         return UserDetailsImpl.build(user);
-    }    
-    
 
-    
+    }
+
 }

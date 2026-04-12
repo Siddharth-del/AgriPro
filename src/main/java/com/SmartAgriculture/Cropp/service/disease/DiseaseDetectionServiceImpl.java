@@ -17,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.SmartAgriculture.Cropp.dtos.ai.AdvisoryResponse;
 import com.SmartAgriculture.Cropp.dtos.disease.DiseaseDetectionResponse;
 import com.SmartAgriculture.Cropp.dtos.disease.DiseasePredictionResponse;
+import com.SmartAgriculture.Cropp.exception.InvalidImageException;
 import com.SmartAgriculture.Cropp.model.DiseaseDetection;
 import com.SmartAgriculture.Cropp.repository.DiseaseDetectionRepository;
 import com.SmartAgriculture.Cropp.repository.UserRepository;
@@ -39,6 +40,8 @@ public class DiseaseDetectionServiceImpl implements DiseaseDetectionService {
     private final FileService fileService;
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
+    private final ImageValidationService imageValidationService;
+
     @Value("${project.image}")
     private String imagePath;
 
@@ -54,58 +57,55 @@ public class DiseaseDetectionServiceImpl implements DiseaseDetectionService {
     @Override
     @Transactional
     public DiseaseDetectionResponse detectdisease(MultipartFile image) throws IOException {
-        File savedFile = null;
         String fileName = null;
 
         try {
+            imageValidationService.validate(image);
+
             fileName = fileService.uploadImage(imagePath, image);
-            savedFile = new File(imagePath + File.separator + fileName);
+            File savedFile = new File(imagePath + File.separator + fileName);
 
             log.info("Image saved: {}", savedFile.getAbsolutePath());
 
             DiseasePredictionResponse result = mlPredictionService.detectDisease(savedFile);
 
-            log.info("Disease detected: {} with confidence: {}",
-                    result.getDiseaseName(), result.getConfidence());
+            log.info("Disease detected: {} with confidence: {}", result.getDiseaseName(), result.getConfidence());
 
-            AdvisoryResponse advisory = aiAdvisoryService
-                    .generateDiseaseAdvisory(result.getDiseaseName());
+            AdvisoryResponse advisory = aiAdvisoryService.generateDiseaseAdvisory(result.getDiseaseName());
+
+            DiseaseDetection disease = new DiseaseDetection();
+            disease.setImagePath(fileName);
+            disease.setDiseaseName(result.getDiseaseName());
+            disease.setConfidenceScore(result.getConfidence());
+            disease.setExplanation(advisory.getExplanation());
+            disease.setPesticideSuggestion(advisory.getPesticideRecommendation());
+            disease.setFertilizerSuggestion(advisory.getFertilizerRecommendation());
+
+            DiseaseDetection saved = diseaseRepository.save(disease);
 
             DiseaseDetectionResponse response = new DiseaseDetectionResponse();
+            response.setDiseaseId(saved.getDiseaseId());
+            response.setCreatedAt(saved.getCreatedAt());
             response.setPredicted(List.of(result));
             response.setExplanation(advisory.getExplanation());
             response.setFertilizerSuggestion(advisory.getFertilizerRecommendation());
             response.setPesticideSuggestion(advisory.getPesticideRecommendation());
 
-            // User user =userRepository.findById(1L).orElseThrow(()-> new
-            // RuntimeException("user not Found"));
-            DiseaseDetection disease = new DiseaseDetection();
-            disease.setImagePath(fileName);
-            disease.setDiseaseName(result.getDiseaseName());
-            disease.setConfidenceScore(result.getConfidence());
-            disease.setExplanation(response.getExplanation());
-            disease.setPesticideSuggestion(response.getPesticideSuggestion());
-            disease.setFertilizerSuggestion(response.getFertilizerSuggestion());
-
-            DiseaseDetection saved = diseaseRepository.save(disease);
-            response.setDiseaseId(saved.getDiseaseId());
-            response.setCreatedAt(saved.getCreatedAt());
-
             return response;
 
+        } catch (InvalidImageException e) {
+            throw e;
         } catch (Exception e) {
-            log.error("Error detecting disease", e);
+            log.error("Error detecting disease: {}", e.getMessage());
             if (fileName != null) {
                 try {
                     fileService.deleteImage(imagePath, fileName);
-                    log.info("Cleaned up file after error: {}", fileName);
                 } catch (IOException cleanupError) {
-                    log.warn("Failed to cleanup file: {}", fileName, cleanupError);
+                    log.warn("Failed to cleanup file: {}", fileName);
                 }
             }
             throw e;
-        } 
-
+        }
     }
 
     @Override
@@ -116,16 +116,12 @@ public class DiseaseDetectionServiceImpl implements DiseaseDetectionService {
             return Collections.emptyList();
         }
 
-        List<DiseaseDetectionResponse> response = diseases.stream()
+        return diseases.stream()
                 .map(disease -> {
                     DiseaseDetectionResponse dto = modelMapper.map(disease, DiseaseDetectionResponse.class);
-
-                    DiseasePredictionResponse prediction = modelMapper.map(disease, DiseasePredictionResponse.class);
-                    dto.setPredicted(List.of(prediction));
+                    dto.setPredicted(List.of(modelMapper.map(disease, DiseasePredictionResponse.class)));
                     return dto;
-                }).collect(Collectors.toList());
-
-        return response;
+                })
+                .collect(Collectors.toList());
     }
-
 }

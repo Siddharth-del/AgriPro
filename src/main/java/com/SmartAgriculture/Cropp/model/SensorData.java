@@ -15,13 +15,17 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Data
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "sensor_Data")
+@Getter
+@Setter
 public class SensorData {
 
     @Id
@@ -37,6 +41,7 @@ public class SensorData {
     private Double humidity;
     private Double ph;
     private Double SoilMoisture;
+    
 
     @CreationTimestamp
     private LocalDateTime createdAt;
@@ -45,4 +50,6 @@ public class SensorData {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = true)
     private User user;
+
+   
 }

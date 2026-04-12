@@ -3,6 +3,7 @@ package com.SmartAgriculture.Cropp.Security;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -57,9 +58,10 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-
+    public SecurityFilterChain filterChain(HttpSecurity http, CorsConfigurationSource corsConfigurationSource)
+            throws Exception {
         http
+                .cors(cors -> cors.configurationSource(corsConfigurationSource))
                 .csrf(csrf -> csrf.disable())
                 .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -70,7 +72,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/ml/**").hasAnyRole("FARMER", "ADMIN")
                         .requestMatchers("/api/disease/**").hasAnyRole("FARMER", "ADMIN")
                         .requestMatchers("/api/ai/**").hasAnyRole("FARMER", "ADMIN")
-                        .requestMatchers("/api/farmer/**").hasRole("FARMER")
+                        .requestMatchers("/api/farmer/**").hasAnyRole("FARMER", "ADMIN")
                         .requestMatchers("/api/sensor/**").permitAll()
                         .requestMatchers("/api/alert/**").authenticated()
                         .requestMatchers("/api/agronomist/**").hasRole("AGRONOMIST")
@@ -80,18 +82,7 @@ public class SecurityConfig {
                         .anyRequest().authenticated());
 
         http.authenticationProvider(authenticationProvider());
-
-        http.addFilterBefore(
-                authenticationJwtTokenFilter(),
-                UsernamePasswordAuthenticationFilter.class);
-
+        http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
-    @Autowired
-private CorsConfig corsConfig;
-
-private CorsConfigurationSource corsConfigurationSource() {
-    return corsConfig.corsConfigurationSource();
-}
-
 }

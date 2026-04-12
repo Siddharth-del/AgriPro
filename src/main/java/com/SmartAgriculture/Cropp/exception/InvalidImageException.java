@@ -11,4 +11,5 @@ public class InvalidImageException extends RuntimeException {
         super(message);
         this.suggestion = suggestion;
     }
+    
 }

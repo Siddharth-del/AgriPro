@@ -30,6 +30,9 @@ import lombok.Setter;
 @Table(name = "users")
 @Entity
 @Data
+@Getter
+@Setter
+@AllArgsConstructor
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -62,7 +65,9 @@ public class User {
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private FarmerProfile farmerProfile;
 
-
     @Column(name = "last_alert_sent")
     private LocalDateTime lastAlertSent;
+    
+    @Column(unique = true)
+    private String deviceApiKey;
 }

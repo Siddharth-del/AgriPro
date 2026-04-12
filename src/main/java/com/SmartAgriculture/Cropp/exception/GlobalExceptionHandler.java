@@ -48,13 +48,15 @@ public class GlobalExceptionHandler {
         error.put("error", "An unexpected error occurred");
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
     }
-    // Add this inside MyGlobalExceptionHandler class
 
-// @ExceptionHandler(Exception.class)
-// public ResponseEntity<APIResponse> handleAllExceptions(Exception e) {
-//     log.error("Unexpected error: {}", e.getMessage(), e);
-//     APIResponse apiResponse = new APIResponse("An unexpected error occurred: "
-//             + e.getMessage(), false);
-//     return new ResponseEntity<>(apiResponse, HttpStatus.INTERNAL_SERVER_ERROR);
-// }
+    @ExceptionHandler(InvalidImageException.class)
+    public ResponseEntity<Map<String, String>> handleInvalidImage(InvalidImageException ex) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(Map.of(
+                        "error", ex.getMessage(),
+                        "suggestion", ex.getSuggestion(),
+                        "type", "INVALID_IMAGE"));
+    }
+
 }

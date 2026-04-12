@@ -6,12 +6,15 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -61,6 +64,8 @@ public class AuthController {
                     .authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(),
                             loginRequest.getPassword()));
         } catch (AuthenticationException exception) {
+            System.out.println("Auth failed reason: " + exception.getMessage());
+            System.out.println("Exception type: " + exception.getClass().getName());
             Map<String, Object> map = new HashMap<>();
             map.put("message", "Bad credentials");
             map.put("status", false);
@@ -79,7 +84,7 @@ public class AuthController {
 
         UserInfoResponse response = new UserInfoResponse(userDetails.getId(),
                 userDetails.getUsername(), roles, jwtCookie.toString());
-   
+
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
                 .body(response);
@@ -101,19 +106,20 @@ public class AuthController {
                 encoder.encode(signUpRequest.getPassword()));
 
         Set<String> strRoles = signUpRequest.getRole();
-Set<Role> roles = new HashSet<>();
+        Set<Role> roles = new HashSet<>();
 
-if (strRoles == null || strRoles.isEmpty()) {
+        if (strRoles == null || strRoles.isEmpty()) {
 
-    Role farmerRole = roleRepository.findByRoleName(AppRole.ROLE_FARMER)
-            .orElseThrow(() -> new RuntimeException(" Default role not found."));
-    roles.add(farmerRole);
+            Role farmerRole = roleRepository.findByRoleName(AppRole.ROLE_FARMER)
+                    .orElseThrow(() -> new RuntimeException(" Default role not found."));
+            roles.add(farmerRole);
 
-} else {
+        } else {
 
-    strRoles.forEach(role-> {
+            strRoles.forEach(role -> {
 
-       switch (role) {
+                switch (role) {
+
                     case "admin":
                         Role adminRole = roleRepository.findByRoleName(AppRole.ROLE_ADMIN)
                                 .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
@@ -131,9 +137,8 @@ if (strRoles == null || strRoles.isEmpty()) {
                                 .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
                         roles.add(userRole);
                 }
-    });
-}
-
+            });
+        }
 
         user.setRoles(roles);
         userRepository.save(user);
@@ -171,4 +176,26 @@ if (strRoles == null || strRoles.isEmpty()) {
                 .header(HttpHeaders.SET_COOKIE, cookie.toString())
                 .body(new MessageResponse("You've been Signed out!"));
     }
+
+    @PreAuthorize("isAuthenticated()")
+    @PostMapping("/refresh-token")
+    public ResponseEntity<?> refreshToken(@AuthenticationPrincipal UserDetails userDetails) {
+        String newToken = jwtUtils.generateTokenFromUsername(userDetails.getUsername());
+        return ResponseEntity.ok(Map.of("token", newToken));
+    }
+// Add this temporary endpoint
+@GetMapping("/test-password")
+public String testPassword() {
+    String rawPassword = "123456";
+    String dbHash = "$2a$10$JgL82D8rfGGcFJ8.4QQPLOuahQzSHt/3nX6vJgQqWy640jXEdCWDC";
+    boolean matches = encoder.matches(rawPassword, dbHash);
+    System.out.println("Password matches: " + matches);
+    return "Matches: " + matches;
+}
+  @GetMapping("/generate-hash")
+public String generateHash() {
+    return encoder.encode("123456");
+}
+
+
 }

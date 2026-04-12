@@ -7,16 +7,17 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 
 import com.SmartAgriculture.Cropp.dtos.crop.CropRecommendationResponse;
 import com.SmartAgriculture.Cropp.dtos.disease.DiseasePredictionResponse;
+import com.SmartAgriculture.Cropp.exception.InvalidImageException;
 import com.SmartAgriculture.Cropp.model.SensorData;
 
 import lombok.RequiredArgsConstructor;
@@ -24,6 +25,8 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class MlPredictionServiceImpl implements MlPredictionService {
+
+    private static final double MIN_CONFIDENCE_THRESHOLD = 0.60;
 
     private final RestTemplate restTemplate;
 
@@ -48,15 +51,11 @@ public class MlPredictionServiceImpl implements MlPredictionService {
             ResponseEntity<Map> response = restTemplate.postForEntity(cropApiUrl, request, Map.class);
             Map<String, Object> body = response.getBody();
 
-            String predictedCrop = (String) body.get("prediction");
-            double confidence = ((Number) body.get("confidence")).doubleValue();
-
             CropRecommendationResponse cropResponse = new CropRecommendationResponse();
-            cropResponse.setCropName(predictedCrop);
-            cropResponse.setCropConfidence(confidence);
+            cropResponse.setCropName((String) body.get("prediction"));
+            cropResponse.setCropConfidence(((Number) body.get("confidence")).doubleValue());
 
             return cropResponse;
-
         } catch (Exception e) {
             throw new RuntimeException("ML prediction failed", e);
         }
@@ -77,17 +76,26 @@ public class MlPredictionServiceImpl implements MlPredictionService {
 
             HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
 
-            ResponseEntity<DiseasePredictionResponse> response = restTemplate.postForEntity(diseaseApiUrl,
-                    requestEntity, DiseasePredictionResponse.class);
+            ResponseEntity<DiseasePredictionResponse> response = restTemplate.postForEntity(
+                    diseaseApiUrl, requestEntity, DiseasePredictionResponse.class);
 
             if (response.getBody() == null) {
                 throw new RuntimeException("ML disease detection returned null body");
             }
 
-            return response.getBody();
+            DiseasePredictionResponse result = response.getBody();
+
+            if (result.getConfidence() < MIN_CONFIDENCE_THRESHOLD) {
+                throw new InvalidImageException(
+                        "The uploaded image does not appear to be a plant leaf.",
+                        "Please upload a clear close-up photo of a plant leaf.");
+            }
+
+            return result;
+        } catch (InvalidImageException e) {
+            throw e;
         } catch (Exception e) {
             throw new RuntimeException("ML disease detection failed: " + e.getMessage(), e);
         }
     }
-
 }

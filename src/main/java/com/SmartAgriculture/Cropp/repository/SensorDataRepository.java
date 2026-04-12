@@ -31,4 +31,8 @@ public interface SensorDataRepository extends JpaRepository<SensorData, Long> {
         List<SensorData> results = findLatestAll(Pageable.ofSize(1));
         return results.isEmpty() ? Optional.empty() : Optional.of(results.get(0));
     }
+
+    Optional<SensorData> findByUserUserId(Long userId);
+    Optional<SensorData> findTopByUserAndDeviceIdNotNullOrderByCreatedAtDesc(User user);
+    
 }

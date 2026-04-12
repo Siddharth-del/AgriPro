@@ -26,12 +26,12 @@ import jakarta.servlet.http.HttpServletRequest;
 public class JwtUtils {
     private static final Logger logger = LoggerFactory.getLogger(JwtUtils.class);
 
-     @Value("${spring.cropp.app.jwtCookies}")
+    @Value("${spring.cropp.app.jwtCookies}")
     private String jwtCookie;
 
     @Value("${spring.app.jwtExpirationMs}")
-    private int jwtExpirationMs;
-
+    private long jwtExpirationMs;
+    
     @Value("${spring.app.jwtSecret}")
     private String jwtSecret;
 
@@ -48,29 +48,29 @@ public class JwtUtils {
 
     public String getJwtFromHeader(HttpServletRequest request) {
         String bearerToken = request.getHeader("Authorization");
-        if (bearerToken != null && bearerToken.startsWith("Bearer")) {
+        if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
             return bearerToken.substring(7);
         }
         return null;
-    }   
+    }
 
     public ResponseCookie generateJwtCookie(UserDetailsImpl userPrincipal) {
-
         String jwt = generateTokenFromUsername(userPrincipal.getUsername());
-        ResponseCookie cookies = ResponseCookie.from(jwtCookie, jwt)
-                .path("/api")
-                .maxAge(24 * 60 * 60)
+        return ResponseCookie.from(jwtCookie, jwt)
+                .path("/") // was "/api" — too restrictive
+                .maxAge(7 * 24 * 60 * 60)
                 .httpOnly(true)
-                .secure(true)
+                .secure(false) // true only in production (HTTPS)
+                .sameSite("Lax") // add this
                 .build();
-        return cookies;
     }
 
     public ResponseCookie getCleanJwtCookie() {
-        ResponseCookie cookies = ResponseCookie.from(jwtCookie, null)
-                .path("/api")
+        return ResponseCookie.from(jwtCookie, "")
+                .path("/") // must match path above
+                .maxAge(0) // was missing — browser won't delete without this
+                .httpOnly(true)
                 .build();
-        return cookies;
     }
 
     public String generateTokenFromUsername(String username) {
