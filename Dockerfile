@@ -17,7 +17,7 @@ RUN apt-get update && apt-get install -y \
 # Set up Python ML service
 WORKDIR /ml
 COPY ML-Training/ .
-RUN pip3 install --no-cache-dir -r requirements.txt
+RUN pip3 install --no-cache-dir --break-system-packages -r requirements.txt
 
 # Copy Spring Boot jar
 WORKDIR /app
