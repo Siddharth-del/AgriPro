@@ -79,6 +79,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/email/**").permitAll()
                         .requestMatchers("/api/weather/**").permitAll()
+                        .requestMatchers("/health").permitAll()
                         .anyRequest().authenticated());
 
         http.authenticationProvider(authenticationProvider());
