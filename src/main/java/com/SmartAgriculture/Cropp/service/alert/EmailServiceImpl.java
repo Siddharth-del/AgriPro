@@ -22,7 +22,7 @@ public class EmailServiceImpl implements EmailService {
     private String fromEmail;
 
     private static final DateTimeFormatter FORMATTER =
-            DateTimeFormatter.ofPattern("dd MMM yyyy 'at' hh:mm a");
+            DateTimeFormatter.ofPattern("dd MMM yyyy 'को' hh:mm a");
 
     @Override
     public void sendEmail(String toEmail, String subject, String body) {
@@ -42,64 +42,66 @@ public class EmailServiceImpl implements EmailService {
 
     @Override
     public void sendWelcomeEmail(String toEmail, String username) {
-        String subject = "Welcome to AgriPro, " + username + "!";
+        String subject = "AgriPro में आपका स्वागत है, " + username + "!";
         String body = """
-                Hi %s,
+                नमस्ते %s,
 
-                Welcome aboard — we're really glad you're here.
+                AgriPro में आपका स्वागत है — हमें बेहद खुशी है कि आप हमारे साथ जुड़े।
 
-                Your AgriPro account is all set up and ready to go.
-                We built this platform to make farm management simpler,
-                so you can spend less time worrying and more time growing.
+                आपका AgriPro खाता पूरी तरह तैयार है।
+                हमने यह प्लेटफॉर्म इसलिए बनाया है ताकि खेती का प्रबंधन
+                आसान हो जाए — ताकि आप कम चिंता में और ज़्यादा उगाने
+                पर ध्यान दे सकें।
 
-                Here's what you can do right away:
+                अभी आप ये काम कर सकते हैं:
 
-                  - Get crop recommendations based on your soil and weather
-                  - Upload a photo to check if your plant has a disease
-                  - Connect your ESP32 sensor and track your field live
-                  - Set moisture thresholds and get alerts before crops suffer
-                  - Ask our AI advisor anything about your farm
+                  - अपनी मिट्टी और मौसम के अनुसार फसल की सिफारिश पाएं
+                  - पौधे की बीमारी जाँचने के लिए फोटो अपलोड करें
+                  - अपना ESP32 सेंसर जोड़ें और खेत की लाइव निगरानी करें
+                  - नमी की सीमा तय करें और फसल को नुकसान से पहले अलर्ट पाएं
+                  - हमारे AI सलाहकार से अपने खेत के बारे में कुछ भी पूछें
 
-                To get started, complete your farmer profile and link
-                your sensor device. It only takes a few minutes.
+                शुरुआत करने के लिए, अपनी किसान प्रोफ़ाइल पूरी करें और
+                सेंसर डिवाइस को जोड़ें। इसमें बस कुछ मिनट लगते हैं।
 
-                If you run into any trouble or have questions, just reach
-                out — we're happy to help.
+                अगर कोई परेशानी हो या कोई सवाल हो, तो बेझिझक संपर्क
+                करें — हम आपकी मदद के लिए हमेशा तैयार हैं।
 
-                Good luck with the season ahead.
+                इस मौसम में आपको शुभकामनाएं।
 
-                Warm regards,
-                The AgriPro Team
+                सादर,
+                AgriPro टीम
                 """.formatted(username);
         sendEmail(toEmail, subject, body);
     }
 
     @Override
     public void sendAlertEmail(String toEmail, String title, String message) {
-        String subject = "Action needed: " + title;
+        String subject = "ध्यान दें: " + title;
         String timestamp = LocalDateTime.now().format(FORMATTER);
         String body = """
-                Hi,
+                नमस्ते,
 
-                We wanted to let you know that your AgriPro monitoring
-                system flagged something on %s that needs your attention.
+                हम आपको बताना चाहते हैं कि आपके AgriPro निगरानी
+                सिस्टम ने %s पर कुछ ऐसा पाया है जिस पर
+                आपका ध्यान ज़रूरी है।
 
-                What happened:
+                क्या हुआ:
                 %s
 
-                Details:
+                विवरण:
                 %s
 
-                Please take a look at your field when you get a chance.
-                If something looks off with your sensor or the reading
-                seems incorrect, check that the probe is properly placed
-                in the soil and the device has a stable connection.
+                जब भी संभव हो, अपने खेत की जाँच करें।
+                अगर सेंसर की रीडिंग गलत लग रही हो, तो देखें कि
+                सेंसर की जाँच मिट्टी में सही तरह लगी है और
+                डिवाइस का इंटरनेट कनेक्शन ठीक है।
 
-                If this keeps happening, feel free to contact us and
-                we'll help you sort it out.
+                अगर यह बार-बार हो रहा हो, तो हमसे संपर्क करें —
+                हम इसे सुलझाने में आपकी मदद करेंगे।
 
-                Take care,
-                The AgriPro Team
+                आपका ख्याल रखें,
+                AgriPro टीम
                 """.formatted(timestamp, title, message);
         sendEmail(toEmail, subject, body);
     }
@@ -113,55 +115,57 @@ public class EmailServiceImpl implements EmailService {
         String timestamp   = LocalDateTime.now().format(FORMATTER);
 
         String subject = isCritical
-                ? "Urgent: Your field in " + city + " needs water now"
-                : "Heads up: Soil moisture is getting low in " + city;
+                ? "अत्यंत आवश्यक: " + city + " में आपके खेत को अभी पानी चाहिए"
+                : "ध्यान दें: " + city + " में मिट्टी की नमी कम हो रही है";
 
         String opening = isCritical
                 ? """
-                  Your soil moisture has dropped to %.1f%%, which is critically
-                  low. At this level, your crops are at real risk of stress and
-                  damage. Please start irrigating as soon as possible.
+                  आपकी मिट्टी की नमी घटकर %.1f%% हो गई है, जो बेहद
+                  कम है। इस स्तर पर आपकी फसलों को गंभीर नुकसान हो
+                  सकता है। कृपया जल्द से जल्द सिंचाई शुरू करें।
                   """.formatted(soilMoisture)
                 : """
-                  Your soil moisture is at %.1f%%, which is below the safe
-                  threshold of 30%%. It's not an emergency yet, but your crops
-                  will need water soon to stay healthy.
+                  आपकी मिट्टी की नमी %.1f%% है, जो सुरक्षित सीमा
+                  30%% से कम है। अभी आपातकाल नहीं है, लेकिन फसलों
+                  को जल्द पानी की ज़रूरत होगी।
                   """.formatted(soilMoisture);
 
         String body = """
-                Hi,
+                नमस्ते,
 
-                Your AgriPro sensor picked up a reading in %s on %s
-                that we think you should know about.
+                आपके AgriPro सेंसर ने %s में %s पर
+                एक ऐसी रीडिंग दर्ज की है जो हमें लगता है
+                आपको जाननी चाहिए।
 
                 %s
-                Here's what the sensor is currently showing:
+                सेंसर अभी यह दिखा रहा है:
 
-                  Soil moisture  : %.1f%%  (safe level is above 30%%)
-                  Temperature    : %.1f°C
-                  Air humidity   : %.1f%%
+                  मिट्टी की नमी  : %.1f%%  (सुरक्षित स्तर 30%% से ऊपर)
+                  तापमान         : %.1f°C
+                  हवा में नमी    : %.1f%%
 
-                What to do next:
+                अब क्या करें:
 
-                  1. Turn on your irrigation system and water the field.
-                  2. Check that your pipes and valves are clear and working.
-                  3. Keep an eye on the moisture level over the next hour.
-                  4. If it doesn't recover, consider calling your agronomist.
+                  1. सिंचाई सिस्टम चालू करें और खेत को पानी दें।
+                  2. पाइप और वॉल्व की जाँच करें कि सब सही काम कर रहा है।
+                  3. अगले एक घंटे में नमी का स्तर देखते रहें।
+                  4. अगर सुधार न हो, तो अपने कृषि विशेषज्ञ से बात करें।
 
-                A couple of things worth checking if the reading looks wrong:
-                make sure the sensor probe is fully inserted into the soil
-                and that your ESP32 device has a stable WiFi connection.
+                अगर रीडिंग गलत लग रही हो, तो यह सुनिश्चित करें कि
+                सेंसर की जाँच पूरी तरह मिट्टी में लगी है और
+                आपके ESP32 डिवाइस का WiFi कनेक्शन स्थिर है।
 
-                We'll send you another alert if the situation doesn't improve,
-                but we'll wait at least 10 minutes so we don't flood your inbox.
+                अगर स्थिति में सुधार नहीं हुआ तो हम फिर अलर्ट भेजेंगे,
+                लेकिन कम से कम 10 मिनट का इंतज़ार करेंगे ताकि
+                आपका इनबॉक्स संदेशों से न भर जाए।
 
-                Stay on top of it and your crops will be fine.
+                ध्यान रखें, और आपकी फसलें ठीक रहेंगी।
 
-                The AgriPro Team
+                AgriPro टीम
 
                 ---
-                This alert was sent automatically by your ESP32 field sensor.
-                Please do not reply to this email.
+                यह अलर्ट आपके ESP32 फील्ड सेंसर द्वारा स्वचालित रूप से
+                भेजा गया है। कृपया इस ईमेल का जवाब न दें।
                 """.formatted(
                         city, timestamp,
                         opening,
@@ -169,5 +173,22 @@ public class EmailServiceImpl implements EmailService {
                 );
 
         sendEmail(toEmail, subject, body);
+    }
+
+    @Override
+    public boolean sendOtp(String toEmail, String subject, String body) {
+          try {
+            SimpleMailMessage message = new SimpleMailMessage();
+            message.setFrom(fromEmail);
+            message.setTo(toEmail);
+            message.setSubject(subject);
+            message.setText(body);
+            mailSender.send(message);
+            log.info("Email sent to: {}", toEmail);
+            return  true;
+        } catch (Exception e) {
+            log.error("Failed to send email to {}: {}", toEmail, e.getMessage());
+            throw new RuntimeException("Failed to send email: " + e.getMessage());
+        }
     }
 }

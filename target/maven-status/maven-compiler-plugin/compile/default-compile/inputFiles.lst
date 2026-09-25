@@ -4,6 +4,7 @@ C:\Users\acer\OneDrive\Desktop\Smart-Agriculture-System-main\src\main\java\com\S
 C:\Users\acer\OneDrive\Desktop\Smart-Agriculture-System-main\src\main\java\com\SmartAgriculture\Cropp\Config\SwaggerConfig.java
 C:\Users\acer\OneDrive\Desktop\Smart-Agriculture-System-main\src\main\java\com\SmartAgriculture\Cropp\dtos\sensor\DeviceCredentialRequest.java
 C:\Users\acer\OneDrive\Desktop\Smart-Agriculture-System-main\src\main\java\com\SmartAgriculture\Cropp\model\FarmerProfile.java
+C:\Users\acer\OneDrive\Desktop\Smart-Agriculture-System-main\src\main\java\com\SmartAgriculture\Cropp\controller\HealthController.java
 C:\Users\acer\OneDrive\Desktop\Smart-Agriculture-System-main\src\main\java\com\SmartAgriculture\Cropp\dtos\sensor\SensorLatestResponse.java
 C:\Users\acer\OneDrive\Desktop\Smart-Agriculture-System-main\src\main\java\com\SmartAgriculture\Cropp\controller\WeatherController.java
 C:\Users\acer\OneDrive\Desktop\Smart-Agriculture-System-main\src\main\java\com\SmartAgriculture\Cropp\model\Role.java
@@ -15,7 +16,6 @@ C:\Users\acer\OneDrive\Desktop\Smart-Agriculture-System-main\src\main\java\com\S
 C:\Users\acer\OneDrive\Desktop\Smart-Agriculture-System-main\src\main\java\com\SmartAgriculture\Cropp\service\ai\AiAdvisoryService.java
 C:\Users\acer\OneDrive\Desktop\Smart-Agriculture-System-main\src\main\java\com\SmartAgriculture\Cropp\controller\DiseaseDetectionController.java
 C:\Users\acer\OneDrive\Desktop\Smart-Agriculture-System-main\src\main\java\com\SmartAgriculture\Cropp\utils\AuthUtil.java
-C:\Users\acer\OneDrive\Desktop\Smart-Agriculture-System-main\src\main\java\com\SmartAgriculture\Cropp\service\Crop\CropRecommendationServiceImpl.java
 C:\Users\acer\OneDrive\Desktop\Smart-Agriculture-System-main\src\main\java\com\SmartAgriculture\Cropp\service\FarmerProfileServiceImpl.java
 C:\Users\acer\OneDrive\Desktop\Smart-Agriculture-System-main\src\main\java\com\SmartAgriculture\Cropp\dtos\disease\DiseaseDetectionResponse.java
 C:\Users\acer\OneDrive\Desktop\Smart-Agriculture-System-main\src\main\java\com\SmartAgriculture\Cropp\model\DeviceCredential.java
@@ -27,6 +27,7 @@ C:\Users\acer\OneDrive\Desktop\Smart-Agriculture-System-main\src\main\java\com\S
 C:\Users\acer\OneDrive\Desktop\Smart-Agriculture-System-main\src\main\java\com\SmartAgriculture\Cropp\service\WeatherService.java
 C:\Users\acer\OneDrive\Desktop\Smart-Agriculture-System-main\src\main\java\com\SmartAgriculture\Cropp\model\SensorData.java
 C:\Users\acer\OneDrive\Desktop\Smart-Agriculture-System-main\src\main\java\com\SmartAgriculture\Cropp\exception\ResourceNotFoundException.java
+C:\Users\acer\OneDrive\Desktop\Smart-Agriculture-System-main\src\main\java\com\SmartAgriculture\Cropp\model\UserDevice.java
 C:\Users\acer\OneDrive\Desktop\Smart-Agriculture-System-main\src\main\java\com\SmartAgriculture\Cropp\dtos\EmailRequest.java
 C:\Users\acer\OneDrive\Desktop\Smart-Agriculture-System-main\src\main\java\com\SmartAgriculture\Cropp\exception\GlobalExceptionHandler.java
 C:\Users\acer\OneDrive\Desktop\Smart-Agriculture-System-main\src\main\java\com\SmartAgriculture\Cropp\exception\MyGlobalExceptionHandler.java
@@ -61,9 +62,11 @@ C:\Users\acer\OneDrive\Desktop\Smart-Agriculture-System-main\src\main\java\com\S
 C:\Users\acer\OneDrive\Desktop\Smart-Agriculture-System-main\src\main\java\com\SmartAgriculture\Cropp\service\alert\AlertService.java
 C:\Users\acer\OneDrive\Desktop\Smart-Agriculture-System-main\src\main\java\com\SmartAgriculture\Cropp\controller\AiController.java
 C:\Users\acer\OneDrive\Desktop\Smart-Agriculture-System-main\src\main\java\com\SmartAgriculture\Cropp\dtos\ai\AdvisoryResponse.java
+C:\Users\acer\OneDrive\Desktop\Smart-Agriculture-System-main\src\main\java\com\SmartAgriculture\Cropp\service\alert\Crop\CropRecommendationServiceImpl.java
 C:\Users\acer\OneDrive\Desktop\Smart-Agriculture-System-main\src\main\java\com\SmartAgriculture\Cropp\dtos\sensor\SensorAutoRequest.java
 C:\Users\acer\OneDrive\Desktop\Smart-Agriculture-System-main\src\main\java\com\SmartAgriculture\Cropp\Config\AppConfig.java
 C:\Users\acer\OneDrive\Desktop\Smart-Agriculture-System-main\src\main\java\com\SmartAgriculture\Cropp\controller\DeviceCredentialController.java
+C:\Users\acer\OneDrive\Desktop\Smart-Agriculture-System-main\src\main\java\com\SmartAgriculture\Cropp\dtos\sensor\DeviceListResponse.java
 C:\Users\acer\OneDrive\Desktop\Smart-Agriculture-System-main\src\main\java\com\SmartAgriculture\Cropp\Security\request\SignupRequest.java
 C:\Users\acer\OneDrive\Desktop\Smart-Agriculture-System-main\src\main\java\com\SmartAgriculture\Cropp\exception\InvalidImageException.java
 C:\Users\acer\OneDrive\Desktop\Smart-Agriculture-System-main\src\main\java\com\SmartAgriculture\Cropp\service\disease\DiseaseDetectionServiceImpl.java
@@ -85,6 +88,6 @@ C:\Users\acer\OneDrive\Desktop\Smart-Agriculture-System-main\src\main\java\com\S
 C:\Users\acer\OneDrive\Desktop\Smart-Agriculture-System-main\src\main\java\com\SmartAgriculture\Cropp\service\disease\ImageValidationService.java
 C:\Users\acer\OneDrive\Desktop\Smart-Agriculture-System-main\src\main\java\com\SmartAgriculture\Cropp\controller\AuthController.java
 C:\Users\acer\OneDrive\Desktop\Smart-Agriculture-System-main\src\main\java\com\SmartAgriculture\Cropp\service\ai\MlPredictionService.java
-C:\Users\acer\OneDrive\Desktop\Smart-Agriculture-System-main\src\main\java\com\SmartAgriculture\Cropp\service\Crop\CropRecommendationService.java
 C:\Users\acer\OneDrive\Desktop\Smart-Agriculture-System-main\src\main\java\com\SmartAgriculture\Cropp\dtos\crop\CropRequestDTO.java
 C:\Users\acer\OneDrive\Desktop\Smart-Agriculture-System-main\src\main\java\com\SmartAgriculture\Cropp\service\ai\MlPredictionServiceImpl.java
+C:\Users\acer\OneDrive\Desktop\Smart-Agriculture-System-main\src\main\java\com\SmartAgriculture\Cropp\service\alert\Crop\CropRecommendationService.java

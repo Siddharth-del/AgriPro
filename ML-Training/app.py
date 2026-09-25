@@ -8,7 +8,6 @@ from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 
-# ─── Config ───────────────────────────────────────────────────
 UPLOAD_FOLDER = "uploads"
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
@@ -18,7 +17,6 @@ CONFIDENCE_THRESHOLD = 0.3
 DISEASE_MODEL_PATH = "disease_model.keras"
 CLASS_INDICES_PATH = "class_indices.json"
 
-# ─── Lazy Model Loading (saves memory on startup) ─────────────
 _crop_model = None
 _crop_encoder = None
 _disease_model = None
@@ -64,7 +62,6 @@ def get_disease_classes():
     return _disease_classes
 
 
-# ─── Helpers ──────────────────────────────────────────────────
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
@@ -87,7 +84,6 @@ def preprocess_image(img_path, target_size=(224, 224)):
     return img_array
 
 
-# ─── Routes ───────────────────────────────────────────────────
 @app.route("/", methods=["GET"])
 def health_check():
     return jsonify({
@@ -121,7 +117,6 @@ def predict_crop():
         if missing:
             return jsonify({"error": f"Missing fields: {missing}"}), 400
 
-        # Validate all values are numeric
         try:
             features = [float(data[f]) for f in required_fields]
         except (ValueError, TypeError):
@@ -159,14 +154,12 @@ def detect_disease():
                 "error": f"Invalid file type. Allowed: {ALLOWED_EXTENSIONS}"
             }), 400
 
-        # Save file temporarily
         filename = secure_filename(file.filename)
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         unique_filename = f"{timestamp}_{filename}"
         filepath = os.path.join(UPLOAD_FOLDER, unique_filename)
         file.save(filepath)
 
-        # Preprocess & predict
         img_array = preprocess_image(filepath)
         model = get_disease_model()
         disease_classes = get_disease_classes()
@@ -181,7 +174,6 @@ def detect_disease():
         top_confidence = float(pred_probs[top_idx])
         top_disease = disease_classes[top_idx]
 
-        # All predictions above threshold
         detected = [
             {
                 "diseaseName": disease_classes[idx],
@@ -207,12 +199,10 @@ def detect_disease():
         return jsonify({"error": f"Prediction failed: {str(e)}"}), 500
 
     finally:
-        # Always clean up uploaded file
         if filepath and os.path.exists(filepath):
             os.remove(filepath)
 
 
-# ─── Main ─────────────────────────────────────────────────────
 if __name__ == "__main__":
     print("=" * 50)
     print("  Flask ML API Starting...")

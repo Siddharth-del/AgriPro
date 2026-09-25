@@ -23,7 +23,7 @@ public class AdminController {
     
     private final AdminService adminService;
     
-   // @PreAuthorize("hasRole('ADMIN')")
+   @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/farmers")
     public ResponseEntity<List<FarmerProfileResponse>> getAllFarmers(){
         List<FarmerProfileResponse> response=adminService.getAllFarmers();

@@ -1,4 +1,4 @@
-package com.SmartAgriculture.Cropp.service.Crop;
+package com.SmartAgriculture.Cropp.service.alert.Crop;
 
 import java.util.List;
 

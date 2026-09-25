@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.SmartAgriculture.Cropp.dtos.crop.CropRecommendationResponse;
 import com.SmartAgriculture.Cropp.dtos.crop.CropRequestDTO;
-import com.SmartAgriculture.Cropp.service.Crop.CropRecommendationService;
+import com.SmartAgriculture.Cropp.service.alert.Crop.CropRecommendationService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
